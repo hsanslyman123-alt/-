@@ -61,6 +61,17 @@ button.pri{background:var(--ac);color:var(--acx);border-color:var(--ac);font-wei
 .sheet .btns{grid-template-columns:1fr 1fr 1fr}
 a.dl{display:block;text-align:center;margin-bottom:14px;padding:12px;border-radius:8px;background:var(--hi);color:var(--hix);font-weight:600;text-decoration:none}
 a.dl[hidden]{display:none}
+textarea{width:100%;margin-top:2px;padding:9px 10px;font:inherit;font-size:15px;color:var(--ink);background:var(--bg);border:1px solid var(--ln);border-radius:8px}
+input[type=checkbox]{width:auto;margin:0 0 0 8px}
+.hd{display:flex;justify-content:space-between;align-items:center;gap:10px}
+button.gear{font-size:22px;line-height:1;padding:8px 12px}
+.sws{display:flex;gap:10px;margin:6px 0 4px}
+.sw{width:38px;height:38px;border-radius:50%;border:2px solid var(--ln);padding:0}
+.by{text-align:center;color:var(--mut);font:600 13px/1 system-ui,sans-serif;letter-spacing:.14em;margin:26px 0 0;direction:ltr}
+#splash{position:fixed;inset:0;z-index:50;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:var(--ac);color:var(--acx);transition:opacity .5s}
+#splash.o{opacity:0;pointer-events:none}
+.sp-t{font-size:26px;font-weight:700}
+.sp-by{font:600 16px/1 system-ui,sans-serif;letter-spacing:.2em;opacity:.9;direction:ltr}
 @page{margin:14mm}
 @media print{body>main{display:none}.sheet{position:static;overflow:visible;padding:0;background:#fff!important}.sheet .btns,a.dl{display:none}#sheetBody{border:0;padding:0;background:#fff!important}#sheetBody *{color:#000!important}th,td{border-color:#999!important}}
 .tot{font-size:12px;color:var(--mut)}
@@ -68,8 +79,9 @@ a.dl[hidden]{display:none}
 </style>
 </head>
 <body>
+<div id=splash><div class=sp-t>حاسبة تسعير المشاريع</div><div class=sp-by>By Hassan</div></div>
 <main>
-<h1>حاسبة تسعير المشاريع</h1>
+<div class=hd><h1>حاسبة تسعير المشاريع</h1><button class=gear data-act=cfg aria-label=الإعدادات>⚙</button></div>
 <p class="sub">أدخل ساعات العمل والمعدات، واختر هامش الربح، فيظهر لك السعر وحصة كل شخص.</p>
 
 <div class="result" aria-live="polite">
@@ -81,6 +93,8 @@ a.dl[hidden]{display:none}
     <div><span class="lbl">سعر القطعة</span><b class="num" id="per">$0</b></div>
   </div>
 </div>
+
+<section><h2>المشاريع المحفوظة</h2><div class=btns><button class=pri data-act=saveP>حفظ المشروع الحالي</button><button data-act=newP>مشروع جديد</button></div><div id=plist></div></section>
 
 <div class=btns><button class=pri data-act=client>كشف العميل</button><button data-act=owner>كشف شامل</button></div>
 
@@ -143,7 +157,20 @@ a.dl[hidden]{display:none}
     <tfoot id="payFoot"></tfoot>
   </table>
 </section>
+<p class=by>By Hassan</p>
 </main>
+<div class=sheet id=cfg hidden><div class=sheetin><div class=btns><button class=pri data-act=closeCfg>تم</button><button data-act=resetCfg>استعادة الافتراضي</button></div>
+<section><h2>الهوية والكشوف</h2>
+<label>اسمك أو اسم الاستوديو (يظهر في كشف العميل)<input type=text data-c=brand></label>
+<label style=margin-top:8px>رقم التواصل أو واتساب<input type=text data-c=contact></label>
+<div class=two style=margin-top:8px><label>رمز العملة<input type=text data-c=cur></label><label>صلاحية العرض (أيام)<input type=text data-n=1 inputmode=decimal data-c=valid></label></div>
+<label style=margin-top:8px>الشروط (تظهر أسفل كشف العميل)<textarea data-c=terms rows=3></textarea></label>
+<p><label><input type=checkbox data-c=showDate>إظهار التاريخ</label><label><input type=checkbox data-c=showPer>إظهار سعر القطعة</label><label><input type=checkbox data-c=showItems>تفصيل البنود وأسعارها</label></p></section>
+<section><h2>الأسعار</h2><div class=two><label>خصم %<input type=text data-n=1 inputmode=decimal data-c=disc></label><label>ضريبة %<input type=text data-n=1 inputmode=decimal data-c=tax></label></div>
+<label style=margin-top:8px>تقريب السعر إلى أقرب<select data-n=1 data-c=round><option value=0>بدون تقريب</option><option value=5>5</option><option value=10>10</option><option value=50>50</option></select></label></section>
+<section><h2>المظهر</h2><label>الوضع<select data-c=theme><option value=auto>تلقائي</option><option value=light>فاتح</option><option value=dark>داكن</option></select></label>
+<label style=margin-top:8px>لون التطبيق</label><div class=sws><button class=sw data-act=sw data-col=#0e6b63 style=background:#0e6b63 aria-label=أخضر></button><button class=sw data-act=sw data-col=#1f5fbf style=background:#1f5fbf aria-label=أزرق></button><button class=sw data-act=sw data-col=#7a1f3d style=background:#7a1f3d aria-label=عنابي></button><button class=sw data-act=sw data-col=#c2410c style=background:#c2410c aria-label=برتقالي></button><button class=sw data-act=sw data-col=#5b3fa8 style=background:#5b3fa8 aria-label=بنفسجي></button><button class=sw data-act=sw data-col=#222222 style=background:#222222 aria-label=أسود></button></div></section>
+</div></div>
 <div class=sheet id=sheet hidden><div class=sheetin><div class=btns><button class=pri data-act=copySheet id=copyBtn>نسخ النص</button><button class=pri data-act=printSheet>حفظ PDF</button><button data-act=closeSheet>إغلاق</button></div><a id=dlLink class=dl download=price-sheet.pdf target=_blank hidden>فتح ملف PDF أو حفظه</a><div id=sheetBody></div></div></div>
 
 <script>
@@ -158,8 +185,8 @@ function save(){try{localStorage.setItem('pricecalc1',JSON.stringify(S));}catch(
 var $=function(s){return document.querySelector(s)};
 var esc=function(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})};
 var num=function(v){var s=String(v==null?'':v).replace(/[\u0660-\u0669]/g,function(d){return d.charCodeAt(0)-1632}).replace(/[\u06F0-\u06F9]/g,function(d){return d.charCodeAt(0)-1776}).replace(/[\u066B\u060C,]/g,'.');var x=parseFloat(s);return isFinite(x)?x:0};
-var money=function(n){return '$'+(Math.round(n*100)/100).toLocaleString('en-US',{maximumFractionDigits:2})};
-var money0=function(n){return '$'+Math.round(n).toLocaleString('en-US')};
+var money=function(n){return (S.cur||'$')+(Math.round(n*100)/100).toLocaleString('en-US',{maximumFractionDigits:2})};
+var money0=function(n){return (S.cur||'$')+Math.round(n).toLocaleString('en-US')};
 
 function persons(){var out=[];S.tasks.forEach(function(t){var p=String(t.p||'').trim();if(p&&out.indexOf(p)<0)out.push(p)});return out}
 function fld(cls,cap,l,i,k,v,type,extra){return '<label class="'+cls+'">'+cap+'<input type="'+(type==='number'?'text':type)+'" '+(type==='number'?'data-n=1 inputmode="decimal" ':'')+'data-l="'+l+'" data-i="'+i+'" data-k="'+k+'" value="'+esc(v)+'" '+(extra||'')+'></label>'}
@@ -194,7 +221,7 @@ function calc(){
  var dep=0;S.equip.forEach(function(e){var d=num(e.life)>0?num(e.pr)/num(e.life)*num(e.h):0;e._d=d;dep+=d});
  var other=num(S.other),cost=wsum+dep+other,m=num(S.margin)/100,price;
  if(S.mode==='margin'){price=m<1?cost/(1-m):cost}else{price=cost*(1+m)}
- var profit=price-cost,ratio=cost>0?price/cost:0,pcs=Math.max(1,num(S.pieces));
+ price=adj(price);var profit=price-cost,ratio=cost>0?price/cost:0,pcs=Math.max(1,num(S.pieces));
  $('#price').textContent=money0(price);$('#cost').textContent=money0(cost);$('#profit').textContent=money0(profit);$('#per').textContent=money0(price/pcs);
  S.tasks.forEach(function(t,i){var w=num(t.h)*num(t.r),a=$('#tw'+i),b=$('#tp'+i);if(a)a.textContent=money(w);if(b)b.textContent=money(w*ratio)});
  S.equip.forEach(function(e,i){var a=$('#ed'+i);if(a)a.textContent=money(e._d)});
@@ -240,10 +267,10 @@ document.addEventListener('click',function(e){
 var T=function(h){return '<tr>'+h+'</tr>'};
 function dp(e){return num(e.life)>0?num(e.pr)/num(e.life)*num(e.h):0}
 function shr(p,n){var v=S.shares[p];return v===undefined?Math.round(100/n):num(v)}
-function model(){var ps=persons(),wsum=0,wage={},dep=0;ps.forEach(function(p){wage[p]=0});S.tasks.forEach(function(t){var w=num(t.h)*num(t.r),p=String(t.p||'').trim();wsum+=w;if(p)wage[p]+=w});S.equip.forEach(function(e){dep+=dp(e)});var other=num(S.other),cost=wsum+dep+other,m=num(S.margin)/100,price=S.mode==='margin'?(m<1?cost/(1-m):cost):cost*(1+m);return{ps:ps,wage:wage,dep:dep,other:other,cost:cost,price:price,profit:price-cost,ratio:cost>0?price/cost:0}}
+function model(){var ps=persons(),wsum=0,wage={},dep=0;ps.forEach(function(p){wage[p]=0});S.tasks.forEach(function(t){var w=num(t.h)*num(t.r),p=String(t.p||'').trim();wsum+=w;if(p)wage[p]+=w});S.equip.forEach(function(e){dep+=dp(e)});var other=num(S.other),cost=wsum+dep+other,m=num(S.margin)/100,price=adj(S.mode==='margin'?(m<1?cost/(1-m):cost):cost*(1+m));return{ps:ps,wage:wage,dep:dep,other:other,cost:cost,price:price,profit:price-cost,ratio:cost>0?price/cost:0}}
 function clientSheet(){var M=model(),L=[];S.tasks.forEach(function(t){var a=num(t.h)*num(t.r)*M.ratio;if(a>0)L.push([String(t.n||'خدمة'),a])});if(M.dep>0)L.push(['المعدات والإضاءة',M.dep*M.ratio]);if(M.other>0)L.push(['تكاليف إضافية',M.other*M.ratio]);var c=L.map(function(x){return Math.round(x[1]*100)}),tot=Math.round(M.price*100);if(c.length)c[0]+=tot-c.reduce(function(a,b){return a+b},0);var pcs=Math.max(1,num(S.pieces)),rows=L.map(function(x,i){return T('<td>'+esc(x[0])+'</td><td class=num>'+money(c[i]/100)+'</td>')}).join(''),dt=new Date().toLocaleDateString('ar-u-nu-latn',{day:'numeric',month:'long',year:'numeric'});return '<h2>عرض سعر</h2><p>'+(S.client?'العميل: <b>'+esc(S.client)+'</b><br>':'')+'التاريخ: '+dt+'<br>ريلات: <b class=num>'+num(S.reels)+'</b><br>كاروسيل: <b class=num>'+num(S.carousels)+'</b><br>بوستات: <b class=num>'+num(S.posts)+'</b><br>إجمالي القطع: <b class=num>'+pcs+'</b></p><table><thead><tr><th>البند</th><th>السعر</th></tr></thead><tbody>'+rows+'</tbody><tfoot><tr><td>الإجمالي</td><td class=num>'+money(tot/100)+'</td></tr></tfoot></table><p>سعر القطعة الواحدة: <b class=num>'+money(tot/100/pcs)+'</b></p><p class=hint>يشمل السعر تعديلين على كل قطعة، وأي تعديل أو قطعة إضافية تُسعَّر منفصلة.</p>'}
 function ownerSheet(){var M=model(),n=M.ps.length,tot=0;M.ps.forEach(function(p){tot+=shr(p,n)});var r1=S.tasks.map(function(t){var w=num(t.h)*num(t.r),s=w*M.ratio;return T('<td>'+esc(t.n||'-')+'</td><td>'+esc(t.p||'-')+'</td><td class=num>'+num(t.h)+' x '+num(t.r)+'</td><td class=num>'+money(w)+'</td><td class=num>'+money(s)+'</td><td class=num>'+money(s-w)+'</td>')}).join(''),r2=S.equip.map(function(e){var d=dp(e),s=d*M.ratio;return T('<td>'+esc(e.n||'-')+'</td><td>معدات</td><td class=num>'+num(e.h)+' h</td><td class=num>'+money(d)+'</td><td class=num>'+money(s)+'</td><td class=num>'+money(s-d)+'</td>')}).join(''),r3=M.other>0?T('<td>تكاليف أخرى</td><td>خارجية</td><td></td><td class=num>'+money(M.other)+'</td><td class=num>'+money(M.other*M.ratio)+'</td><td class=num>'+money(M.other*(M.ratio-1))+'</td>'):'',pay=M.ps.map(function(p){var pr=tot>0?M.profit*shr(p,n)/tot:0,d=p===S.owner?M.dep:0;return T('<td>'+esc(p)+'</td><td class=num>'+money(M.wage[p])+'</td><td class=num>'+money(d)+'</td><td class=num>'+money(pr)+'</td><td class=num><b>'+money(M.wage[p]+d+pr)+'</b></td>')}).join('');return '<h2>كشف شامل</h2><p>'+(S.client?'العميل: <b>'+esc(S.client)+'</b><br>':'')+'ريلات: <b class=num>'+num(S.reels)+'</b> | كاروسيل: <b class=num>'+num(S.carousels)+'</b> | بوستات: <b class=num>'+num(S.posts)+'</b><br>إجمالي القطع: <b class=num>'+num(S.pieces)+'</b> | سعر القطعة: <b class=num>'+money(M.price/Math.max(1,num(S.pieces)))+'</b></p><table><thead><tr><th>المهمة</th><th>الشخص</th><th>ساعات x سعر</th><th>تكلفتها</th><th>من سعر العميل</th><th>ربحها</th></tr></thead><tbody>'+r1+r2+r3+'</tbody><tfoot><tr><td>الإجمالي</td><td></td><td></td><td class=num>'+money(M.cost)+'</td><td class=num>'+money(M.price)+'</td><td class=num>'+money(M.profit)+'</td></tr></tfoot></table><p>هامش الربح: <b class=num>'+(M.cost>0?Math.round(M.profit/M.cost*100):0)+'%</b> فوق التكلفة، و<b class=num>'+(M.price>0?Math.round(M.profit/M.price*100):0)+'%</b> من سعر البيع.</p><h2>ما يأخذه كل شخص</h2><table><thead><tr><th>الشخص</th><th>أجر العمل</th><th>معدات</th><th>الربح</th><th>الإجمالي</th></tr></thead><tbody>'+pay+'</tbody></table>'}
-function openSheet(k){pdfBlob=null;$('#dlLink').hidden=true;document.querySelector('[data-act=printSheet]').textContent='حفظ PDF';$('#sheetBody').innerHTML='<div class=scroll>'+(k==='client'?clientSheet():ownerSheet())+'</div>';$('#sheet').hidden=false;$('#sheet').scrollTop=0;$('#copyBtn').textContent='نسخ النص'}
+function openSheet(k){pdfBlob=null;$('#dlLink').hidden=true;document.querySelector('[data-act=printSheet]').textContent='حفظ PDF';$('#sheetBody').innerHTML='<div class=scroll>'+(k==='client'?clientSheet2():ownerSheet())+'</div>';$('#sheet').hidden=false;$('#sheet').scrollTop=0;$('#copyBtn').textContent='نسخ النص'}
 function copyIt(){var t=$('#sheetBody').innerText,b=$('#copyBtn'),fb=function(){var r=document.createRange();r.selectNodeContents($('#sheetBody'));var s=getSelection();s.removeAllRanges();s.addRange(r);b.textContent='حدّد النص وانسخه'};try{navigator.clipboard.writeText(t).then(function(){b.textContent='تم النسخ'},fb)}catch(e){fb()}}
 document.addEventListener('click',function(e){var b=e.target.closest('button[data-act]');if(!b)return;var a=b.dataset.act;if(a==='client'||a==='owner')openSheet(a);if(a==='closeSheet')$('#sheet').hidden=true;if(a==='copySheet')copyIt();if(a==='printSheet')makePdf(b)});
 function buildPdf(pages,cw){
@@ -285,10 +312,25 @@ while(y<ch){var sh=Math.min(ph,ch-y),c=document.createElement('canvas'),g;c.widt
 pdfBlob=buildPdf(pages,cw);var lk=$('#dlLink');lk.href=URL.createObjectURL(pdfBlob);lk.hidden=false;btn.textContent='جاهز: اضغط مرة أخرى للحفظ'}catch(e){fail()}};
 img.onerror=fail;
 img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg)}
+var DEFc={brand:'Creative Vault',contact:'',cur:'$',accent:'#0e6b63',theme:'auto',disc:0,tax:0,round:0,valid:7,showDate:true,showPer:true,showItems:true,terms:'يشمل السعر تعديلين على كل قطعة، وأي تعديل أو قطعة إضافية تُسعَّر منفصلة.'};
+function adj(p){var n=p*(1-num(S.disc)/100),st=num(S.round);return st>0?Math.round(n/st)*st:n}
+function applyCfg(){var r=document.documentElement,h=String(S.accent||'').replace('#',''),y=0;if(S.accent==='#0e6b63'||h.length!==6){r.style.removeProperty('--ac');r.style.removeProperty('--acx')}else{y=.299*parseInt(h.slice(0,2),16)+.587*parseInt(h.slice(2,4),16)+.114*parseInt(h.slice(4),16);r.style.setProperty('--ac',S.accent);r.style.setProperty('--acx',y>160?'#111':'#fff')}if(S.theme==='auto'||!S.theme)r.removeAttribute('data-theme');else r.setAttribute('data-theme',S.theme);var m=document.querySelector('meta[name=theme-color]');if(m&&S.accent)m.content=S.accent}
+function fillCfg(){document.querySelectorAll('[data-c]').forEach(function(e){var v=S[e.dataset.c];if(e.type==='checkbox')e.checked=!!v;else e.value=v==null?'':v})}
+function cfgH(e){var t=e.target,k=t.dataset.c;if(!k)return;S[k]=t.type==='checkbox'?t.checked:(t.dataset.n?num(t.value):t.value);applyCfg();calc();save()}
+document.addEventListener('input',cfgH);document.addEventListener('change',cfgH);
+var PK='pricecalc_projects',PF=['reels','carousels','posts','margin','mode','target','other','owner','tasks','equip','shares','client','disc','tax'];
+function plist(){try{return JSON.parse(localStorage.getItem(PK))||[]}catch(e){return[]}}
+function pput(a){try{localStorage.setItem(PK,JSON.stringify(a))}catch(e){}}
+function renderP(){var a=plist();$('#plist').innerHTML=a.length?a.map(function(p,i){return '<div class=row><div class=c3><b>'+esc(p.name)+'</b><div class=hint style=margin:0>'+esc(p.date)+'</div></div><div class=c3 style=text-align:end><button data-act=loadP data-i='+i+'>فتح</button> <button class=del data-act=delP data-i='+i+'>حذف</button></div></div>'}).join(''):'<p class=hint>لا توجد مشاريع محفوظة بعد.</p>'}
+function reload(){fillTop();$('#client').value=S.client||'';renderTasks();renderEquip();renderShares();calc();save()}
+function pact(a,i){var L=plist(),d;if(a==='saveP'){var o={name:S.client||('مشروع '+(L.length+1)),date:new Date().toLocaleDateString('ar-u-nu-latn'),d:{}};PF.forEach(function(k){o.d[k]=JSON.parse(JSON.stringify(S[k]===undefined?null:S[k]))});L=L.filter(function(p){return p.name!==o.name});L.unshift(o);pput(L);renderP()}if(a==='delP'){L.splice(i,1);pput(L);renderP()}if(a==='loadP'&&L[i]){d=L[i].d;PF.forEach(function(k){if(d[k]!==null&&d[k]!==undefined)S[k]=d[k]});reload()}if(a==='newP'){d=JSON.parse(JSON.stringify(DEF));PF.forEach(function(k){if(d[k]!==undefined)S[k]=d[k]});S.reels=9;S.carousels=2;S.posts=2;S.client='';S.disc=0;S.tax=0;reload()}}
+document.addEventListener('click',function(e){var b=e.target.closest('[data-act]');if(!b)return;var a=b.dataset.act,i=+b.dataset.i;if(a==='cfg'){fillCfg();$('#cfg').hidden=false;$('#cfg').scrollTop=0}if(a==='closeCfg')$('#cfg').hidden=true;if(a==='resetCfg'){for(var k in DEFc)S[k]=DEFc[k];fillCfg();applyCfg();calc();save()}if(a==='sw'){S.accent=b.dataset.col;applyCfg();save()}if(a==='saveP'||a==='delP'||a==='loadP'||a==='newP')pact(a,i)});
+function clientSheet2(){var M=model(),L=[];if(S.showItems){S.tasks.forEach(function(t){var a=num(t.h)*num(t.r)*M.ratio;if(a>0)L.push([String(t.n||'خدمة'),a])});if(M.dep>0)L.push(['المعدات والإضاءة',M.dep*M.ratio]);if(M.other>0)L.push(['تكاليف إضافية',M.other*M.ratio])}else L.push(['خدمات إنتاج المحتوى',M.price]);var c=L.map(function(x){return Math.round(x[1]*100)}),tot=Math.round(M.price*100);if(c.length)c[0]+=tot-c.reduce(function(a,b){return a+b},0);var pcs=Math.max(1,num(S.pieces)),tx=num(S.tax)>0?tot*num(S.tax)/100:0,gt=(tot+tx)/100,rows=L.map(function(x,i){return T('<td>'+esc(x[0])+'</td><td class=num>'+money(c[i]/100)+'</td>')}).join(''),dt=new Date().toLocaleDateString('ar-u-nu-latn',{day:'numeric',month:'long',year:'numeric'}),foot=(tx>0?T('<td>الإجمالي قبل الضريبة</td><td class=num>'+money(tot/100)+'</td>')+T('<td>ضريبة '+num(S.tax)+'%</td><td class=num>'+money(tx/100)+'</td>'):'')+T('<td>الإجمالي المستحق</td><td class=num>'+money(gt)+'</td>');return (S.brand?'<h2>'+esc(S.brand)+'</h2>':'')+(S.contact?'<p class=hint>'+esc(S.contact)+'</p>':'')+'<h2>عرض سعر</h2><p>'+(S.client?'العميل: <b>'+esc(S.client)+'</b><br>':'')+(S.showDate?'التاريخ: '+dt+'<br>':'')+(num(S.valid)>0?'صالح لمدة '+num(S.valid)+' يوماً<br>':'')+'ريلات: <b class=num>'+num(S.reels)+'</b><br>كاروسيل: <b class=num>'+num(S.carousels)+'</b><br>بوستات: <b class=num>'+num(S.posts)+'</b><br>إجمالي القطع: <b class=num>'+pcs+'</b></p><table><thead><tr><th>البند</th><th>السعر</th></tr></thead><tbody>'+rows+'</tbody><tfoot>'+foot+'</tfoot></table>'+(num(S.disc)>0?'<p>تم تطبيق خصم <b class=num>'+num(S.disc)+'%</b></p>':'')+(S.showPer?'<p>سعر القطعة الواحدة: <b class=num>'+money(gt/pcs)+'</b></p>':'')+(S.terms?'<p class=hint>'+esc(S.terms).replace(/\n/g,'<br>')+'</p>':'')}
 function sync(){S.pieces=num(S.reels)+num(S.carousels)+num(S.posts);$('#ptot').textContent=S.pieces}
 function cnt(){var a=[];if(num(S.reels)>0)a.push(num(S.reels)+' ريل');if(num(S.carousels)>0)a.push(num(S.carousels)+' كاروسيل');if(num(S.posts)>0)a.push(num(S.posts)+' بوست');return a.join(' + ')}
 if(S.reels===undefined){S.reels=9;S.carousels=2;S.posts=2}
 document.querySelectorAll('input[type=number]').forEach(function(i){i.type='text';i.dataset.n=1;i.inputMode='decimal'});
+for(var ck in DEFc)if(S[ck]===undefined)S[ck]=DEFc[ck];applyCfg();renderP();setTimeout(function(){$('#splash').classList.add('o')},1300);setTimeout(function(){var s=$('#splash');if(s)s.remove()},1900);
 fillTop();renderTasks();renderEquip();renderShares();calc();$('#client').value=S.client||'';
 })();
 </script>
