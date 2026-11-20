@@ -200,10 +200,10 @@ html.nomo *,html.nomo *::before,html.nomo *::after{animation:none!important;tran
 
 <script>
 (function(){
-var DEF={pieces:0,margin:0,mode:'markup',target:0,other:0,owner:'أنا',
-tasks:[{n:'كتابة الأفكار',p:'شريكي',h:0,r:0},{n:'مساعدة التصوير',p:'شريكي',h:0,r:0},{n:'النشر والمتابعة',p:'شريكي',h:0,r:0},{n:'التصوير',p:'أنا',h:0,r:0},{n:'المونتاج',p:'أنا',h:0,r:0}],
-equip:[{n:'الكاميرا',pr:0,life:1500,h:0},{n:'الإضاءة',pr:0,life:1500,h:0},{n:'المايك',pr:0,life:1500,h:0},{n:'الترايبود',pr:0,life:1500,h:0}],
-shares:{'أنا':70,'شريكي':30}};
+var DEF={pieces:0,margin:0,mode:'markup',target:0,other:0,owner:'',
+tasks:[],
+equip:[],
+shares:{}};
 var S=JSON.parse(JSON.stringify(DEF));
 try{var raw=localStorage.getItem('pricecalc1');if(raw){var o=JSON.parse(raw);if(o&&o.tasks&&o.equip)S=o;}}catch(e){}
 function save(){try{localStorage.setItem('pricecalc1',JSON.stringify(S));}catch(e){}}
@@ -217,14 +217,14 @@ function persons(){var out=[];S.tasks.forEach(function(t){var p=String(t.p||'').
 function fld(cls,cap,l,i,k,v,type,extra){return '<label class="'+cls+'">'+cap+'<input type="'+(type==='number'?'text':type)+'" '+(type==='number'?'data-n=1 inputmode="decimal" ':'')+'data-l="'+l+'" data-i="'+i+'" data-k="'+k+'" value="'+esc(v)+'" '+(extra||'')+'></label>'}
 
 function renderTasks(){
- $('#tasks').innerHTML=S.tasks.map(function(t,i){
+ $('#tasks').innerHTML=!S.tasks.length?'<p class=hint>لا توجد مهام بعد. أضف مهمة من الزر أدناه.</p>':S.tasks.map(function(t,i){
   return '<div class="row">'+fld('c3','المهمة','tasks',i,'n',t.n,'text')+fld('c3','من يؤديها','tasks',i,'p',t.p,'text')+
   fld('c2','ساعات','tasks',i,'h',t.h,'number')+fld('c2','سعر الساعة $','tasks',i,'r',t.r,'number')+
   '<div class="c2" style="align-self:end"><button class="del" data-act="delTask" data-i="'+i+'">حذف</button></div>'+
   '<div class="c6 note"><span>أجره: <strong class="num" id="tw'+i+'"></strong></span><span>حصته من سعر العميل: <strong class="num" id="tp'+i+'"></strong></span></div><label class="c6"><input type="checkbox" data-l="tasks" data-i="'+i+'" data-k="s"'+(t.s===false?'':' checked')+'>يظهر في كشف العميل</label></div>'}).join('');
 }
 function renderEquip(){
- $('#equip').innerHTML=S.equip.map(function(e,i){
+ $('#equip').innerHTML=!S.equip.length?'<p class=hint>لا توجد معدات بعد. أضف معدة من الزر أدناه.</p>':S.equip.map(function(e,i){
   return '<div class="row">'+fld('c3','المعدة','equip',i,'n',e.n,'text')+fld('c3','ثمنها $','equip',i,'pr',e.pr,'number')+
   fld('c2','عمرها (ساعة)','equip',i,'life',e.life,'number')+fld('c2','ساعات استخدامها هنا','equip',i,'h',e.h,'number')+
   '<div class="c2" style="align-self:end"><button class="del" data-act="delEquip" data-i="'+i+'">حذف</button></div>'+
@@ -249,7 +249,7 @@ function calc(){
  price=adj(price);var profit=price-cost,ratio=cost>0?price/cost:0,pcs=Math.max(1,num(S.pieces));
  setN('#price',price);setN('#cost',cost);setN('#profit',profit);setN('#per',price/pcs);
  S.tasks.forEach(function(t,i){var w=num(t.h)*num(t.r),a=$('#tw'+i),b=$('#tp'+i);if(a)a.textContent=money(w);if(b)b.textContent=money(w*ratio)});
- S.equip.forEach(function(e,i){var a=$('#ed'+i);if(a)a.textContent=money(e._d)});
+ S.equip.forEach(function(e,i){var a=$('#ed'+i);if(a)a.textContent=(num(e.life)<=0&&num(e.pr)>0)?'أدخل عمر المعدة':money(e._d)});
  var tg=num(S.target),out=$('#tgtOut');
  if(tg>0&&cost>0){var pf=tg-cost,mk=pf/cost*100,mg=pf/tg*100;
   out.innerHTML=pf<0?'بهذا السعر تخسر <b class="num">'+money0(-pf)+'</b>. أقل سعر بلا خسارة هو <b class="num">'+money0(cost)+'</b>.':
@@ -282,9 +282,9 @@ document.addEventListener('change',function(e){var d=e.target.dataset;if(d.l==='
 document.addEventListener('click',function(e){
  var b=e.target.closest('button[data-act]');if(!b)return;
  var a=b.dataset.act,i=+b.dataset.i;
- if(a==='addTask'){S.tasks.push({n:'',p:persons()[0]||'أنا',h:0,r:3});renderTasks();renderShares()}
+ if(a==='addTask'){S.tasks.push({n:'',p:persons()[0]||'أنا',h:0,r:0});renderTasks();renderShares()}
  if(a==='delTask'){S.tasks.splice(i,1);renderTasks();renderShares()}
- if(a==='addEquip'){S.equip.push({n:'',pr:0,life:1500,h:0});renderEquip()}
+ if(a==='addEquip'){S.equip.push({n:'',pr:0,life:0,h:0});renderEquip()}
  if(a==='delEquip'){S.equip.splice(i,1);renderEquip()}
  calc();save();
 });
@@ -350,7 +350,7 @@ function renderP(){var a=plist();$('#plist').innerHTML=a.length?a.map(function(p
 function reload(){fillTop();$('#client').value=S.client||'';renderTasks();renderEquip();renderShares();calc();save()}
 function pact(a,i){var L=plist(),d;if(a==='saveP'){var o={name:S.client||('مشروع '+(L.length+1)),date:new Date().toLocaleDateString('ar-u-nu-latn'),d:{}};PF.forEach(function(k){o.d[k]=JSON.parse(JSON.stringify(S[k]===undefined?null:S[k]))});L=L.filter(function(p){return p.name!==o.name});L.unshift(o);pput(L);renderP()}if(a==='delP'){L.splice(i,1);pput(L);renderP()}if(a==='loadP'&&L[i]){d=L[i].d;PF.forEach(function(k){if(d[k]!==null&&d[k]!==undefined)S[k]=d[k]});reload()}if(a==='newP'){d=JSON.parse(JSON.stringify(DEF));PF.forEach(function(k){if(d[k]!==undefined)S[k]=d[k]});S.reels=0;S.carousels=0;S.posts=0;S.client='';S.disc=0;S.tax=0;reload()}}
 document.addEventListener('click',function(e){var b=e.target.closest('[data-act]');if(!b)return;var a=b.dataset.act,i=+b.dataset.i;if(a==='cfg'){fillCfg();$('#cfg').hidden=false;$('#cfg').scrollTop=0}if(a==='closeCfg')$('#cfg').hidden=true;if(a==='resetCfg'){for(var k in DEFc)S[k]=DEFc[k];fillCfg();applyCfg();calc();save()}if(a==='sw'){S.accent=b.dataset.col;applyCfg();save()}if(a==='newP'){if(!b.dataset.arm){b.dataset.arm=1;b.textContent='اضغط مرة أخرى للتأكيد';setTimeout(function(){delete b.dataset.arm;b.textContent='إعادة ضبط المشروع'},3500)}else{delete b.dataset.arm;b.textContent='إعادة ضبط المشروع';pact(a,i)}}else if(a==='saveP'||a==='delP'||a==='loadP')pact(a,i)});
-function clientSheet2(){var M=model(),L=[];var V=[];S.tasks.forEach(function(t){var a=num(t.h)*num(t.r)*M.ratio;if(a>0&&t.s!==false)V.push([String(t.n||'خدمة'),a])});S.equip.forEach(function(e){var a=dp(e)*M.ratio;if(a>0&&e.s!==false)V.push([String(e.n||'معدات'),a])});if(M.other>0&&S.showOther!==false)V.push(['تكاليف إضافية',M.other*M.ratio]);var vs=V.reduce(function(a,x){return a+x[1]},0);if(S.showItems&&vs>0)L=V.map(function(x){return [x[0],x[1]*M.price/vs]});else L.push(['خدمات إنتاج المحتوى',M.price]);var c=L.map(function(x){return Math.round(x[1]*100)}),tot=Math.round(M.price*100);if(c.length)c[0]+=tot-c.reduce(function(a,b){return a+b},0);var pcs=Math.max(1,num(S.pieces)),tx=num(S.tax)>0?tot*num(S.tax)/100:0,gt=(tot+tx)/100,rows=L.map(function(x,i){return T('<td>'+esc(x[0])+'</td><td class=num>'+money(c[i]/100)+'</td>')}).join(''),dt=new Date().toLocaleDateString('ar-u-nu-latn',{day:'numeric',month:'long',year:'numeric'}),foot=(tx>0?T('<td>الإجمالي قبل الضريبة</td><td class=num>'+money(tot/100)+'</td>')+T('<td>ضريبة '+num(S.tax)+'%</td><td class=num>'+money(tx/100)+'</td>'):'')+T('<td>الإجمالي المستحق</td><td class=num>'+money(gt)+'</td>');return (S.brand?'<h2>'+esc(S.brand)+'</h2>':'')+(S.contact?'<p class=hint>'+esc(S.contact)+'</p>':'')+'<h2>عرض سعر</h2><p>'+(S.client?'العميل: <b>'+esc(S.client)+'</b><br>':'')+(S.showDate?'التاريخ: '+dt+'<br>':'')+(num(S.valid)>0?'صالح لمدة '+num(S.valid)+' يوماً<br>':'')+(S.showReels!==false?'ريلات: <b class=num>'+num(S.reels)+'</b><br>':'')+(S.showCarousels!==false?'كاروسيل: <b class=num>'+num(S.carousels)+'</b><br>':'')+(S.showPosts!==false?'بوستات: <b class=num>'+num(S.posts)+'</b><br>':'')+(S.showTotal!==false?'إجمالي القطع: <b class=num>'+pcs+'</b>':'')+'</p><table><thead><tr><th>البند</th><th>السعر</th></tr></thead><tbody>'+rows+'</tbody><tfoot>'+foot+'</tfoot></table>'+(num(S.disc)>0?'<p>تم تطبيق خصم <b class=num>'+num(S.disc)+'%</b></p>':'')+(S.showPer?'<p>سعر القطعة الواحدة: <b class=num>'+money(gt/pcs)+'</b></p>':'')+(S.terms?'<p class=hint>'+esc(S.terms).replace(/\n/g,'<br>')+'</p>':'')}
+function clientSheet2(){var M=model(),L=[];var V=[];S.tasks.forEach(function(t){var a=num(t.h)*num(t.r)*M.ratio;if(a>0&&t.s!==false)V.push([String(t.n||'خدمة'),a])});S.equip.forEach(function(e){var a=dp(e)*M.ratio;if(a>0&&e.s!==false)V.push([String(e.n||'معدات'),a])});if(M.other>0&&S.showOther!==false)V.push(['تكاليف إضافية',M.other*M.ratio]);var vs=V.reduce(function(a,x){return a+x[1]},0);if(S.showItems&&vs>0)L=V.map(function(x){return [x[0],x[1]*M.price/vs]});else L.push(['خدمات إنتاج المحتوى',M.price]);var c=L.map(function(x){return Math.round(x[1]*100)}),tot=Math.round(M.price*100);if(c.length)c[0]+=tot-c.reduce(function(a,b){return a+b},0);var pcs=Math.max(1,num(S.pieces)),tx=num(S.tax)>0?tot*num(S.tax)/100:0,gt=(tot+tx)/100,rows=L.map(function(x,i){return T('<td>'+esc(x[0])+'</td><td class=num>'+money(c[i]/100)+'</td>')}).join(''),dt=new Date().toLocaleDateString('ar-u-nu-latn',{day:'numeric',month:'long',year:'numeric'}),foot=(tx>0?T('<td>الإجمالي قبل الضريبة</td><td class=num>'+money(tot/100)+'</td>')+T('<td>ضريبة '+num(S.tax)+'%</td><td class=num>'+money(tx/100)+'</td>'):'')+T('<td>الإجمالي المستحق</td><td class=num>'+money(gt)+'</td>');return (S.brand?'<h2>'+esc(S.brand)+'</h2>':'')+(S.contact?'<p class=hint>'+esc(S.contact)+'</p>':'')+'<h2>عرض سعر</h2><p>'+(S.client?'العميل: <b>'+esc(S.client)+'</b><br>':'')+(S.showDate?'التاريخ: '+dt+'<br>':'')+(num(S.valid)>0?'صالح لمدة '+num(S.valid)+' يوماً<br>':'')+(S.showReels!==false?'ريلات: <b class=num>'+num(S.reels)+'</b><br>':'')+(S.showCarousels!==false?'كاروسيل: <b class=num>'+num(S.carousels)+'</b><br>':'')+(S.showPosts!==false?'بوستات: <b class=num>'+num(S.posts)+'</b><br>':'')+(S.showTotal!==false?'إجمالي القطع: <b class=num>'+num(S.pieces)+'</b>':'')+'</p><table><thead><tr><th>البند</th><th>السعر</th></tr></thead><tbody>'+rows+'</tbody><tfoot>'+foot+'</tfoot></table>'+(num(S.disc)>0?'<p>تم تطبيق خصم <b class=num>'+num(S.disc)+'%</b></p>':'')+(S.showPer?'<p>سعر القطعة الواحدة: <b class=num>'+money(gt/pcs)+'</b></p>':'')+(S.terms?'<p class=hint>'+esc(S.terms).replace(/\n/g,'<br>')+'</p>':'')}
 function stag(){Array.prototype.forEach.call(document.querySelectorAll('main>*'),function(el,i){el.style.animationDelay=Math.min(i*.05,.5)+'s'})}
 function setN(sel,v){var el=$(sel);if(!el)return;var from=el._v==null?0:el._v;el._v=v;cancelAnimationFrame(el._r);if(S.motion===false||Math.abs(v-from)<.5){el.textContent=money0(v);return}var t0=performance.now();(function f(t){var k=Math.min(1,(t-t0)/380),e=1-Math.pow(1-k,3);el.textContent=money0(from+(v-from)*e);if(k<1)el._r=requestAnimationFrame(f)})(t0)}
 var AC;
